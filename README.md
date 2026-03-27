@@ -79,7 +79,57 @@ because":
 - Let user weight topics: Economy 80%, Climate 20%
 - Multi Agent debate mode: simulate each party defending your answers.
 
+## Quickstart (prototype)
 
+1. Create a virtual environment and install requirements:
+
+    python -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
+
+2. Set your OpenAI key (if using OpenAI):
+
+    export OPENAI_API_KEY=your_key_here
+
+3. Ingest party program PDFs:
+
+    python -m src.main --ingest path/to/pp.pdf path/to/psoe.pdf --persist-dir ./data/chroma
+
+Note: We can find the Spanish political parties plan here: 
+https://www.senado.es/web/composicionorganizacion/gruposparlamentarios/programaselectoralespartidos/index.html
+
+I had to research a bit each electoral plan because I couldn't find a webpage
+with all the electoral plans.
+
+
+4. Run the recommendation interview and scoring flow:
+
+    python -m src.main --recommend --persist-dir ./data/chroma
+
+Notes:
+- The prototype uses langchain and Chroma for the vector store. If OpenAI is
+  not available, the ingestion will attempt a sentence-transformers fallback
+  for embeddings (local model).
+- This is a minimal starting point. Next steps: add robust parsing, store
+  source metadata, implement a question generator agent, and a richer scoring
+  pipeline using RAG prompts.
+
+
+# How to run the app
+
+# create env and install deps
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# set your OpenAI key if you plan to use OpenAI
+export OPENAI_API_KEY="sk_..."
+
+# ingest PDFs (example)
+python3 -m src.main --ingest path/to/pp.pdf path/to/psoe.pdf --persist-dir ./data/chroma
+
+# run the interview + scoring flow
+python3 -m src.main --recommend --persist-dir ./data/chroma
 
 
 

@@ -5,6 +5,8 @@ import logging
 from pypdf import PdfReader
 
 
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
 # from langchain.document_loaders import PyPDFLoader
 # from langchain.text_splitter import RecursiveCharacterTextSplitter
 # from langchain.embeddings import OpenAIEmbeddings
@@ -39,12 +41,26 @@ def pdf_to_text_paths(pdf_paths: List[str]) -> List[str]:
 
 
 def chunk_texts(texts: List[str], chunk_size=1000, chunk_overlap=200):
+
+    logging.info(
+        f"Chunking texts, "
+        f"chunk_size: [{chunk_size}], "
+        f"chunk_overlap: [{chunk_overlap}], "
+    )
+
+    # Divide texts into chunks for better embedding.
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=chunk_size, chunk_overlap=chunk_overlap)
-    docs = []
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap
+    )
+
+    text_chunks = []
     for t in texts:
-        docs.extend(splitter.split_text(t))
-    return docs
+        text_chunks.extend(splitter.split_text(t))
+
+    logging.info(f"Chunking complete. Generated {len(text_chunks)} chunks.")
+
+    return text_chunks
 
 
 def create_or_update_vectorstore(
@@ -79,6 +95,8 @@ def ingest_pdfs(
     texts = []
     for each_pdf in pdf_paths:
         logger.info("Ingesting PDF: %s", each_pdf)
+
+        # Read the PDF and extract text
         pdf_text = _transform_pdf_to_text(each_pdf)
         texts.append(pdf_text["text"])
 

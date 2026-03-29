@@ -87,6 +87,8 @@ because":
     source .venv/bin/activate
     pip install -r requirements.txt
 
+    pip install -r requirements-dev.txt
+
 2. Set your OpenAI key (if using OpenAI):
 
     export OPENAI_API_KEY=your_key_here
@@ -136,6 +138,14 @@ python3 -m src.main --recommend --persist-dir ./data/chroma
 
 
 
+
+# Download embedding model
+
+Info: https://ollama.com/library/nomic-embed-text
+
+```bash
+ollama pull nomic-embed-text
+```
 
 
 

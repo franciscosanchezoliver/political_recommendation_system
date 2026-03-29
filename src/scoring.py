@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from langchain_openai import ChatOpenAI
+from langchain.chat_models import ChatOpenAI
 
 
 def score_parties(
@@ -24,8 +24,26 @@ Evaluate how well the party '{p}' matches that profile on a scale from 0 to
 Give a concise explanation (1-3 sentences).
 """
 
-        resp = llm.invoke(prompt)
-        text = resp.content
+        # langchain ChatOpenAI instances are callable and return a
+        # LangChain result object; normalize to a text string.
+        try:
+            resp = llm(prompt)
+        except TypeError:
+            # fallback for wrappers exposing `invoke`
+            resp = llm.invoke(prompt)
+
+        # try to extract content in multiple ways
+        text = None
+        if hasattr(resp, "content"):
+            text = resp.content
+        elif hasattr(resp, "generations"):
+            # LangChain may return .generations -> list -> text
+            try:
+                text = resp.generations[0][0].text
+            except Exception:
+                text = str(resp)
+        else:
+            text = str(resp)
         # naive parse: try to extract JSON-like substring
         results[p] = {"raw": text}
 
